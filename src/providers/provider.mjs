@@ -27,23 +27,44 @@ export class Provider {
 
     static TEXT_DECODER = new TextDecoder();
 
-    async chat( { host, model, messages, stream } ) {
-        throw "not implemented";
+    async chat( { host, apiKey, model, messages, stream } ) {
+        throw "not implemented !";
     }
 
-    checkChat( { host, model, messages, stream } ) {
-        if ( !model ) throw "the model propery is required";
-        if ( !messages ) throw "the messages property is required";
-        if ( !Array.isArray( messages ) )  throw "the messages property should be an array";
+    async models( { host, apiKey } ) {
+        throw "not implemented !";
+    }
+
+    parse( chunk ) {
+        return JSON.parse( chunk );
+    }
+
+    normalizeIt( result ) {
+        return result;
     }
 
     async *simple_iterator( reader ) {
+        const that = this;
         while ( true ) {
             const { done, value } = await reader.read();
             if ( done ) break;
-            const textChunk = Provider.TEXT_DECODER.decode( value );
-            const result = JSON.parse( textChunk );
-            yield result;
+            const textChunk = Provider.TEXT_DECODER.decode( value );            
+            const tab = textChunk.split( "\n" ).filter( line => line.trim() != "" );
+            for ( let chunk of tab ) {
+                if ( chunk ) {
+                    try {
+                        const parsedChunk = that.parse( chunk );
+                        if ( typeof parsedChunk == "boolean" )
+                            break;
+                        const result = this.normalizeIt( parsedChunk );
+                        if ( !result )
+                            break;
+                        yield result;
+                    } catch( error ) {
+                        break;
+                    }
+                }
+            }
         }
     }
 

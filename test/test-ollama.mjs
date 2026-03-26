@@ -23,24 +23,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { LLMClient } from "../src/llmClient.mjs";
-import { OllamaProvider } from "../src/providers/ollama.mjs";
+// Test for OLLAMA
 
-const provider = new OllamaProvider();
+import { LLMClient } from "../src/llmClient.mjs";
+import { OllamaProvider as MyProvider } from "../src/providers/ollama.mjs";
+
+const provider = new MyProvider();
 const client = new LLMClient( provider );
+// client.setHost( "http://127.0.0.1:11434" );
+
+console.log( "OLLAMA TESTS..." );
+console.log( "\n\nList of models :" );
+
+const models = await client.models();
+
+models.forEach( model => {
+    console.log( "-" + model.name )
+});
 
 const model = "ministral-3:3b";
 const messages = [ { role : "user", content : "hello" }];
+
 // No streaming
 let stream = false;
+console.log( `\n\nStream : ${stream}` );
+console.log( messages );
 
 let response = await client.chat( { model, messages, stream } );
 console.log( response.message.content );
 
 // With streaming
 stream = true;
-
 messages.push( { role : "system", content : "be concise" });
+
+console.log( `\n\nStream : ${stream}` );
+console.log( messages );
 
 const response2 = await client.chat( { model, messages, stream } );
 for await ( response of response2 ) {

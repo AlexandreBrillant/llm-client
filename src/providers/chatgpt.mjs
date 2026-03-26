@@ -23,15 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Provider} from "./provider.mjs";
+import { Provider } from "./provider.mjs ";
 
+const DEFAULT_HOST = "https://api.openai.com/v1";
 
-const DEFAULT_HOST = "http://localhost:11434";
-
-export class OllamaProvider extends Provider {
+export class ChatGptProvider extends Provider {
 
     defaultHeaders( {host,apiKey}) {
-        return [];
+        if ( !apiKey )
+            throw "apiKey is required for this usage";
+        return { 
+            "Content-Type": "application/json",
+            Accept : "application/json",
+            Authorization:"Bearer " + apiKey
+        };
     }
 
     defaultHost() {
@@ -39,14 +44,59 @@ export class OllamaProvider extends Provider {
     }
 
     toString() {
-        return "ollama";
+        return "chatgpt";
+    }
+
+    parse( chunk ) {
+        const message = chunk.replace(/^data: /, "");
+        if ( message == "[DONE]" )
+            return false;
+        return JSON.parse( message );
+    }
+
+/*
+{
+  id: 'chatcmpl-DNhl6TMV4dhSDiuTMv5EeadoSAJ97',
+  object: 'chat.completion.chunk',
+  created: 1774542124,
+  model: 'gpt-5-nano-2025-08-07',
+  service_tier: 'default',
+  system_fingerprint: null,
+  choices: [ { index: 0, delta: [Object], finish_reason: null } ],
+  obfuscation: 'xHo'
+}
+
+{
+  model: 'ministral-3:3b',
+  created_at: '2026-03-26T16:20:13.923200205Z',
+  message: { role: 'assistant', content: ' How' },
+  done: false
+}
+
+*/
+
+    normalizeIt( result ) {
+        if ( !result.choices )
+            return null;
+        if ( !result.choices.length )
+            return null;
+        if ( !result.choices[0].delta )
+            return null;
+        if ( !result.choices[0].delta.content )
+            return null;
+        return { 
+            model: result.model,
+            created_at: result.created,
+            message: { role: 'assistant', content: result.choices[0].delta.content },
+            done:false
+        }
     }
 
     async chat( { host, apiKey, model, messages, stream } ) {    
         stream = stream ?? false;
         host = host ?? this.defaultHost();
 
-        const rep = await fetch( host + "/api/chat", {
+        const rep = await fetch( host + "/chat/completions", {
             method: "POST",
             format:"json",
             headers: this.defaultHeaders( {host,apiKey} ),
@@ -58,51 +108,34 @@ export class OllamaProvider extends Provider {
         }
 
         if ( !stream ) {
-            return await rep.json();
-        } else {       
-            
-/*
-{
-  model: 'ministral-3:3b',
-  created_at: '2026-03-26T16:20:13.923200205Z',
-  message: { role: 'assistant', content: ' How' },
-  done: false
-}
-*/
-
+            const data = await rep.json();
+            return data.choices[0];
+        } else {        
             const reader = await rep.body.getReader();
             return super.simple_iterator( reader );
         }
     }
 
-/* 
-    {
-        "name":"ministral-3:14b",
-        "model":"ministral-3:14b",
-        "modified_at":"2026-03-20T16:36:25.485217708+01:00",
-        "size":9082537546,
-        "digest":"4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
-        "details":
-            {
-                "parent_model":"",
-                "format":"gguf",
-                "family":"mistral3",
-                "families":["mistral3"],
-                "parameter_size":"13.9B",
-                "quantization_level":"Q4_K_M"}
-    }
+/*
+{
+  id: 'gpt-4-0613',
+  object: 'model',
+  created: 1686588896,
+  owned_by: 'openai'
+}
 */
 
     async models( { host, apiKey } ) {
         host = host ?? this.defaultHost();
-        const rep = await fetch( host + "/api/tags", {
+        const rep = await fetch( host + "/models", {
+            method: "GET",
             headers: this.defaultHeaders( {host,apiKey} )
         } );
         if ( !rep.ok ) {
             throw "Invalid request : " + rep.status
         }
-        const ollama_obj = await rep.json();
-        return ollama_obj.models || [];
+        const gpt_obj = await rep.json();
+        return ( gpt_obj.data || [] ).map( model => ( { name:model.id, ...model } ) );
     }
 
 }

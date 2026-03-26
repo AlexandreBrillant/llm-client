@@ -28,7 +28,12 @@ import { Provider } from "./providers/provider.mjs";
 class LLMClient extends Provider {
 
     #provider;
+    #host;
+    #apiKey;
 
+    /**
+     * @param provider LLM provider server like ollama...
+     */
     constructor( provider ) {
         if ( !provider instanceof Provider ) {
             throw "Invalid provider, must be a Provider object";
@@ -37,8 +42,48 @@ class LLMClient extends Provider {
         this.#provider = provider;
     }
 
-    async chat( { host, model, messages, stream } ) {       
-        return this.#provider.chat( { host, model, messages, stream } );
+    /**
+     * Set host URL. Else it will use the default URL
+     * @param host host URL
+     */
+    setHost( host ) {
+        this.#host = host;
+    }
+
+    /**
+     * @param apiKey for Authorization usage
+     */
+    setAPIKey( apiKey ) {
+        this.#apiKey = apiKey;
+    }
+
+    /**
+     * @param host Optional service Location (using the default one else)
+     * @param model Required : LLM Model name 
+     * @param messages Required : An array of { role : "", content : "" }
+     * @param stream By default to true
+     * @returns A complete response or an iterable response
+     */
+    async chat( { model, messages, stream } ) {       
+        if ( !model )
+            throw "A model is required";
+        if ( !messages )
+            throw "A message is required";
+        if ( !Array.isArray( messages ) )
+            throw "messages must be an array of { role, content }";
+        if ( !this.#provider )
+            throw "No provider ?";
+        return this.#provider.chat( { host:this.#host, apiKey:this.#apiKey, model, messages, stream } );
+    }
+
+    /**
+     * @param host Optional Service location
+     * @return an array with a list of available models
+     */
+    async models() {
+        if ( !this.#provider )
+            throw "No provider ?";        
+        return this.#provider.models( { host:this.#host, apiKey:this.#apiKey } );
     }
 
 }

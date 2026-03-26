@@ -23,15 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Provider} from "./provider.mjs";
+import { OllamaProvider } from "./ollama.mjs ";
 
 
-const DEFAULT_HOST = "http://localhost:11434";
+const DEFAULT_HOST = "https://ollama.com";
 
-export class OllamaProvider extends Provider {
+export class OllamaCloudProvider extends OllamaProvider {
 
     defaultHeaders( {host,apiKey}) {
-        return [];
+        if ( !apiKey )
+            throw "apiKey is required for this usage";
+        return { 
+            "Content-Type": "application/json",
+            Accept : "application/json",
+            Authorization:"Bearer " + apiKey
+        };
     }
 
     defaultHost() {
@@ -39,40 +45,7 @@ export class OllamaProvider extends Provider {
     }
 
     toString() {
-        return "ollama";
-    }
-
-    async chat( { host, apiKey, model, messages, stream } ) {    
-        stream = stream ?? false;
-        host = host ?? this.defaultHost();
-
-        const rep = await fetch( host + "/api/chat", {
-            method: "POST",
-            format:"json",
-            headers: this.defaultHeaders( {host,apiKey} ),
-            body: JSON.stringify( { model, messages, stream } ) 
-        } );
-
-        if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
-        }
-
-        if ( !stream ) {
-            return await rep.json();
-        } else {       
-            
-/*
-{
-  model: 'ministral-3:3b',
-  created_at: '2026-03-26T16:20:13.923200205Z',
-  message: { role: 'assistant', content: ' How' },
-  done: false
-}
-*/
-
-            const reader = await rep.body.getReader();
-            return super.simple_iterator( reader );
-        }
+        return "ollama-cloud";
     }
 
 /* 
@@ -92,18 +65,6 @@ export class OllamaProvider extends Provider {
                 "quantization_level":"Q4_K_M"}
     }
 */
-
-    async models( { host, apiKey } ) {
-        host = host ?? this.defaultHost();
-        const rep = await fetch( host + "/api/tags", {
-            headers: this.defaultHeaders( {host,apiKey} )
-        } );
-        if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
-        }
-        const ollama_obj = await rep.json();
-        return ollama_obj.models || [];
-    }
 
 }
 

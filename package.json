@@ -27,6 +27,10 @@
   "main": "llmClient.mjs",
   "scripts": {
     "prebuild" : "node --check src/llmClient.mjs",
-    "build" : "cp src/llmClient.mjs dist"
+    "build" : "cp src/llmClient.mjs dist",
+    "test:ollama" : "node test/test-ollama.mjs",
+    "test:ollamaCloud" : "node test/test-ollama-cloud.mjs",
+    "test:chatgpt" : "node test/test-chatgpt.mjs",
+    "test" : "npm run test:ollama && npm run test:ollama-cloud && npm run test:chatgpt"
   }
 }
