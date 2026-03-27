@@ -1,5 +1,5 @@
 /**
- * test-ollama.mjs
+ * test-openai.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -23,16 +23,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Test for OLLAMA
+// Test for Chatgpt
+// It requires an API KEY, stored inside the JSON file apikeys.json
+
+import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const keys = JSON.parse( readFileSync( join( __dirname, "apikeys.json" ) ) );
+const YOUR_API_KEY = keys.anthropic;
 
 import { LLMClient } from "../src/llmClient.mjs";
-import { OllamaProvider as MyProvider } from "../src/providers/ollama.mjs";
+import { AnthropicProvider as MyProvider } from "../src/providers/anthropic.mjs";
 
 const provider = new MyProvider();
 const client = new LLMClient( provider );
-// client.setHost( "http://127.0.0.1:11434" );
 
-console.log( "OLLAMA TESTS..." );
+client.setAPIKey( YOUR_API_KEY );
+
+console.log( "OPENAI TESTS..." );
 console.log( "\n\nList of models :" );
 
 const models = await client.models();
@@ -41,7 +50,7 @@ models.forEach( model => {
     console.log( "-" + model.name )
 });
 
-const model = "ministral-3:3b";
+const model = "claude-opus-4-20250514";
 const messages = [ { role : "user", content : "hello" }];
 
 // No streaming
@@ -51,17 +60,3 @@ console.log( messages );
 
 let response = await client.chat( { model, messages, stream } );
 console.log( response.message.content );
-
-// With streaming
-stream = true;
-messages.push( { role : "system", content : "be concise" });
-
-console.log( `\n\nStream : ${stream}` );
-console.log( messages );
-
-const response2 = await client.chat( { model, messages, stream } );
-for await ( response of response2 ) {
-    process.stdout.write( response.message.content );
-}
-
-console.log( "\n" );

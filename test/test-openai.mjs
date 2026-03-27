@@ -1,5 +1,5 @@
 /**
- * test1.mjs
+ * test-openai.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -24,19 +24,24 @@ SOFTWARE.
 */
 
 // Test for Chatgpt
-// It requires an API KEY
+// It requires an API KEY, stored inside the JSON file apikeys.json
 
-const YOUR_API_KEY = "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";
+import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const keys = JSON.parse( readFileSync( join( __dirname, "apikeys.json" ) ) );
+const YOUR_API_KEY = keys.openai;
 
 import { LLMClient } from "../src/llmClient.mjs";
-import { ChatGptProvider as MyProvider } from "../src/providers/chatgpt.mjs";
+import { OpenAIProvider as MyProvider } from "../src/providers/openai.mjs";
 
 const provider = new MyProvider();
 const client = new LLMClient( provider );
 
 client.setAPIKey( YOUR_API_KEY );
 
-console.log( "CHATGPT TESTS..." );
+console.log( "OPENAI TESTS..." );
 console.log( "\n\nList of models :" );
 
 const models = await client.models();

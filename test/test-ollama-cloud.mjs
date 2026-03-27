@@ -1,5 +1,5 @@
 /**
- * test1.mjs
+ * test-ollama-cloud.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -24,9 +24,15 @@ SOFTWARE.
 */
 
 // Test for OLLAMA Cloud
-// It requires an API KEY
+// It requires an API KEY, stored inside the JSON file apikeys.json
 
-const YOUR_API_KEY = "231cd0482f9d40b79b0aa90e698a43cf.cZpuPGcuG9uZD7PmcrbkoYRA";
+import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const keys = JSON.parse( readFileSync( join( __dirname, "apikeys.json" ) ) );
+
+const YOUR_API_KEY = keys.ollamacloud;
 
 import { LLMClient } from "../src/llmClient.mjs";
 import { OllamaCloudProvider as MyProvider } from "../src/providers/ollamaCloud.mjs";

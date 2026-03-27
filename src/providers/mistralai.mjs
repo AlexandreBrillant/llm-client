@@ -1,5 +1,5 @@
 /**
- * ollamaCloud.mjs
+ * mistralai.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -23,12 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { OllamaProvider } from "./ollama.mjs ";
+import { OpenAIProvider } from "./openai.mjs ";
 
+const DEFAULT_HOST = "https://api.mistral.ai/v1";
 
-const DEFAULT_HOST = "https://ollama.com";
-
-export class OllamaCloudProvider extends OllamaProvider {
+export class MistralAIProvider extends OpenAIProvider {
 
     defaultHeaders( {host,apiKey}) {
         if ( !apiKey )
@@ -45,26 +44,15 @@ export class OllamaCloudProvider extends OllamaProvider {
     }
 
     toString() {
-        return "ollama-cloud";
+        return "mistralai";
     }
 
-/* 
-    {
-        "name":"ministral-3:14b",
-        "model":"ministral-3:14b",
-        "modified_at":"2026-03-20T16:36:25.485217708+01:00",
-        "size":9082537546,
-        "digest":"4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
-        "details":
-            {
-                "parent_model":"",
-                "format":"gguf",
-                "family":"mistral3",
-                "families":["mistral3"],
-                "parameter_size":"13.9B",
-                "quantization_level":"Q4_K_M"}
+    parse( chunk ) {
+        const message = chunk.replace(/^data: /, "");
+        if ( message == "[DONE]" )
+            return false;
+        return JSON.parse( message );
     }
-*/
 
 }
 

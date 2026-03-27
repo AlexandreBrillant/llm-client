@@ -30,18 +30,30 @@ const DEFAULT_HOST = "http://localhost:11434";
 
 export class OllamaProvider extends Provider {
 
-    defaultHeaders( {host,apiKey}) {
-        return [];
+    toString() {
+        return "ollama";
     }
 
     defaultHost() {
         return DEFAULT_HOST;
     }
 
-    toString() {
-        return "ollama";
+    endPoints() {
+        return { 
+            models : "/api/tags",
+            chat : "/api/chat"
+        };
+    }    
+
+    modelsResponseNormalizer( response ) {
+        return response.models || [];
     }
 
+    chatResponseNormalizer( response ) {
+        return response;
+    }    
+
+/*
     async chat( { host, apiKey, model, messages, stream } ) {    
         stream = stream ?? false;
         host = host ?? this.defaultHost();
@@ -61,14 +73,6 @@ export class OllamaProvider extends Provider {
             return await rep.json();
         } else {       
             
-/*
-{
-  model: 'ministral-3:3b',
-  created_at: '2026-03-26T16:20:13.923200205Z',
-  message: { role: 'assistant', content: ' How' },
-  done: false
-}
-*/
 
             const reader = await rep.body.getReader();
             return super.simple_iterator( reader );
@@ -76,34 +80,23 @@ export class OllamaProvider extends Provider {
     }
 
 /* 
-    {
-        "name":"ministral-3:14b",
-        "model":"ministral-3:14b",
-        "modified_at":"2026-03-20T16:36:25.485217708+01:00",
-        "size":9082537546,
-        "digest":"4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
-        "details":
-            {
-                "parent_model":"",
-                "format":"gguf",
-                "family":"mistral3",
-                "families":["mistral3"],
-                "parameter_size":"13.9B",
-                "quantization_level":"Q4_K_M"}
-    }
+{
+    "name":"ministral-3:14b",
+    "model":"ministral-3:14b",
+    "modified_at":"2026-03-20T16:36:25.485217708+01:00",
+    "size":9082537546,
+    "digest":"4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
+    "details":
+        {
+            "parent_model":"",
+            "format":"gguf",
+            "family":"mistral3",
+            "families":["mistral3"],
+            "parameter_size":"13.9B",
+            "quantization_level":"Q4_K_M"}
+}
 */
 
-    async models( { host, apiKey } ) {
-        host = host ?? this.defaultHost();
-        const rep = await fetch( host + "/api/tags", {
-            headers: this.defaultHeaders( {host,apiKey} )
-        } );
-        if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
-        }
-        const ollama_obj = await rep.json();
-        return ollama_obj.models || [];
-    }
 
 }
 

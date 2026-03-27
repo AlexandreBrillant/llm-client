@@ -1,5 +1,5 @@
 /**
- * ollama.mjs
+ * anthropic.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -25,17 +25,17 @@ SOFTWARE.
 
 import { Provider } from "./provider.mjs ";
 
-const DEFAULT_HOST = "https://api.openai.com/v1";
+const DEFAULT_HOST = "https://api.anthropic.com/v1";
 
-export class ChatGptProvider extends Provider {
+export class AnthropicProvider extends Provider {
 
     defaultHeaders( {host,apiKey}) {
         if ( !apiKey )
             throw "apiKey is required for this usage";
-        return { 
-            "Content-Type": "application/json",
-            Accept : "application/json",
-            Authorization:"Bearer " + apiKey
+        return {
+            "Content-Type" : "application/json",
+            "anthropic-version" : "2023-06-01",
+            "X-Api-Key" : apiKey
         };
     }
 
@@ -43,8 +43,19 @@ export class ChatGptProvider extends Provider {
         return DEFAULT_HOST;
     }
 
+    endPoints() {
+        return { 
+            models : "/models",
+            chat : "/messages"
+        };
+    }
+
+    modelsResponseNormalizer( response ) {
+        return ( response.data || [] ).map( model => ( { name:model.id, ...model } ) );        
+    }
+
     toString() {
-        return "chatgpt";
+        return "anthropic";
     }
 
     parse( chunk ) {
@@ -53,27 +64,6 @@ export class ChatGptProvider extends Provider {
             return false;
         return JSON.parse( message );
     }
-
-/*
-{
-  id: 'chatcmpl-DNhl6TMV4dhSDiuTMv5EeadoSAJ97',
-  object: 'chat.completion.chunk',
-  created: 1774542124,
-  model: 'gpt-5-nano-2025-08-07',
-  service_tier: 'default',
-  system_fingerprint: null,
-  choices: [ { index: 0, delta: [Object], finish_reason: null } ],
-  obfuscation: 'xHo'
-}
-
-{
-  model: 'ministral-3:3b',
-  created_at: '2026-03-26T16:20:13.923200205Z',
-  message: { role: 'assistant', content: ' How' },
-  done: false
-}
-
-*/
 
     normalizeIt( result ) {
         if ( !result.choices )
@@ -92,51 +82,16 @@ export class ChatGptProvider extends Provider {
         }
     }
 
-    async chat( { host, apiKey, model, messages, stream } ) {    
-        stream = stream ?? false;
-        host = host ?? this.defaultHost();
-
-        const rep = await fetch( host + "/chat/completions", {
-            method: "POST",
-            format:"json",
-            headers: this.defaultHeaders( {host,apiKey} ),
-            body: JSON.stringify( { model, messages, stream } ) 
-        } );
-
-        if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
-        }
-
-        if ( !stream ) {
-            const data = await rep.json();
-            return data.choices[0];
-        } else {        
-            const reader = await rep.body.getReader();
-            return super.simple_iterator( reader );
-        }
+    chatBodyRequest( { model, messages, stream } ) {
+        return { model, messages, stream };
     }
 
-/*
-{
-  id: 'gpt-4-0613',
-  object: 'model',
-  created: 1686588896,
-  owned_by: 'openai'
-}
-*/
-
-    async models( { host, apiKey } ) {
-        host = host ?? this.defaultHost();
-        const rep = await fetch( host + "/models", {
-            method: "GET",
-            headers: this.defaultHeaders( {host,apiKey} )
-        } );
-        if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
-        }
-        const gpt_obj = await rep.json();
-        return ( gpt_obj.data || [] ).map( model => ( { name:model.id, ...model } ) );
+    chatResponseNormalizer( response ) {
+        return { message: {
+            content : response.content.text
+        } };
     }
+
 
 }
 

@@ -30,7 +30,9 @@
     "build" : "cp src/llmClient.mjs dist",
     "test:ollama" : "node test/test-ollama.mjs",
     "test:ollamaCloud" : "node test/test-ollama-cloud.mjs",
-    "test:chatgpt" : "node test/test-chatgpt.mjs",
+    "test:openai" : "node test/test-openai.mjs",
+    "test:mistralai" : "node test/test-mistralai.mjs",
+    "test:anthropic" : "node test/test-anthropic.mjs",
     "test" : "npm run test:ollama && npm run test:ollama-cloud && npm run test:chatgpt"
   }
 }

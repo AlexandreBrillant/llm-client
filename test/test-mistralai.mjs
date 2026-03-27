@@ -1,5 +1,5 @@
 /**
- * test-ollama.mjs
+ * test-mistralai.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -23,16 +23,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Test for OLLAMA
+// Test for Chatgpt
+// It requires an API KEY, stored inside the JSON file apikeys.json
+
+import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const keys = JSON.parse( readFileSync( join( __dirname, "apikeys.json" ) ) );
+const YOUR_API_KEY = keys.mistralai;
 
 import { LLMClient } from "../src/llmClient.mjs";
-import { OllamaProvider as MyProvider } from "../src/providers/ollama.mjs";
+import { MistralAIProvider as MyProvider } from "../src/providers/mistralai.mjs";
 
 const provider = new MyProvider();
 const client = new LLMClient( provider );
-// client.setHost( "http://127.0.0.1:11434" );
 
-console.log( "OLLAMA TESTS..." );
+client.setAPIKey( YOUR_API_KEY );
+
+console.log( "MISTRALAI TESTS..." );
 console.log( "\n\nList of models :" );
 
 const models = await client.models();
@@ -41,7 +50,8 @@ models.forEach( model => {
     console.log( "-" + model.name )
 });
 
-const model = "ministral-3:3b";
+const model = "ministral-3b-2512";
+
 const messages = [ { role : "user", content : "hello" }];
 
 // No streaming

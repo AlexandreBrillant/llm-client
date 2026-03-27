@@ -27,13 +27,66 @@ export class Provider {
 
     static TEXT_DECODER = new TextDecoder();
 
-    async chat( { host, apiKey, model, messages, stream } ) {
-        throw "not implemented !";
+    defaultHeaders( {host,apiKey}) {
+        return [];
+    }
+
+    defaultHost() {
+        throw "not implemented";
+    }
+
+    endPoints() {
+        throw "not implemented";
+    }
+
+    modelsResponseNormalizer( response ) {
+        throw "not implemented";
+    }
+
+    chatResponseNormalizer( response ) {
+        throw "not implemented";
+    }
+
+    chatBodyRequest( { model, messages, stream } ) {
+        return { model, messages, stream };
+    }
+
+    async chat( { host, apiKey, model, messages, stream } ) {    
+        stream = stream ?? false;
+        host = host ?? this.defaultHost();
+
+        const rep = await fetch( host + this.endPoints().chat, {
+            method: "POST",
+            format:"json",
+            headers: this.defaultHeaders( {host,apiKey} ),
+            body: JSON.stringify( this.chatBodyRequest( { model, messages, stream } ) )
+        } );
+
+        if ( !rep.ok ) {
+            throw "Invalid request : " + rep.status
+        }
+
+        if ( !stream ) {
+            return this.chatResponseNormalizer( await rep.json() );
+        } else {       
+            const reader = await rep.body.getReader();
+            return this.simple_iterator( reader );
+        }
     }
 
     async models( { host, apiKey } ) {
-        throw "not implemented !";
+        host = host ?? this.defaultHost();
+        const rep = await fetch( host + this.endPoints().models, {
+            headers: this.defaultHeaders( {host,apiKey} )
+        } );
+        if ( !rep.ok ) {
+            throw "Invalid request : " + rep.status
+        }
+        const response = await rep.json();
+        return this.modelsResponseNormalizer( response );
     }
+
+    /////////////////////////////////////////
 
     parse( chunk ) {
         return JSON.parse( chunk );
