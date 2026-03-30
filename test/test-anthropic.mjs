@@ -50,8 +50,10 @@ models.forEach( model => {
     console.log( "-" + model.name )
 });
 
-const model = "claude-opus-4-20250514";
-const messages = [ { role : "user", content : "hello" }];
+const model = "claude-haiku-4-5-20251001";
+const messages = [ 
+    { role : "user", content : "hello" }
+];
 
 // No streaming
 let stream = false;
@@ -60,3 +62,17 @@ console.log( messages );
 
 let response = await client.chat( { model, messages, stream } );
 console.log( response.message.content );
+
+// With streaming
+stream = true;
+messages.push( { role : "system", content : "be very funny" } );
+
+console.log( `\n\nStream : ${stream}` );
+console.log( messages );
+
+const response2 = await client.chat( { model, messages, stream } );
+for await ( response of response2 ) {
+    process.stdout.write( response.message.content );
+}
+
+console.log( "\n" );

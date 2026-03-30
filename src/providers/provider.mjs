@@ -47,23 +47,24 @@ export class Provider {
         throw "not implemented";
     }
 
-    chatBodyRequest( { model, messages, stream } ) {
+    chatBodyRequest( { model, maxTokens, messages, stream } ) {
         return { model, messages, stream };
     }
 
-    async chat( { host, apiKey, model, messages, stream } ) {    
+    async chat( { host, apiKey, maxTokens, model, messages, stream } ) {    
         stream = stream ?? false;
         host = host ?? this.defaultHost();
 
         const rep = await fetch( host + this.endPoints().chat, {
             method: "POST",
             format:"json",
-            headers: this.defaultHeaders( {host,apiKey} ),
-            body: JSON.stringify( this.chatBodyRequest( { model, messages, stream } ) )
+            headers: this.defaultHeaders( {host,apiKey,maxTokens} ),
+            body: JSON.stringify( this.chatBodyRequest( { model, maxTokens, messages, stream } ) )
         } );
 
         if ( !rep.ok ) {
-            throw "Invalid request : " + rep.status
+            const errorData = await rep.json();
+            throw "Invalid request : " + rep.status + " : " + errorData.error?.message;
         }
 
         if ( !stream ) {
@@ -101,7 +102,7 @@ export class Provider {
         while ( true ) {
             const { done, value } = await reader.read();
             if ( done ) break;
-            const textChunk = Provider.TEXT_DECODER.decode( value );            
+            const textChunk = Provider.TEXT_DECODER.decode( value );     
             const tab = textChunk.split( "\n" ).filter( line => line.trim() != "" );
             for ( let chunk of tab ) {
                 if ( chunk ) {

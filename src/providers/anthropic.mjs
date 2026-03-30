@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { text } from "node:stream/consumers";
 import { Provider } from "./provider.mjs ";
 
 const DEFAULT_HOST = "https://api.anthropic.com/v1";
@@ -82,16 +83,52 @@ export class AnthropicProvider extends Provider {
         }
     }
 
-    chatBodyRequest( { model, messages, stream } ) {
-        return { model, messages, stream };
+    chatBodyRequest( { model, maxTokens, messages, stream } ) {
+        const { system, res } = messages.reduce(
+            (acc, msg) => {
+                if (msg.role === "system") {
+                    acc.system = msg.content;
+                } else {
+                    acc.res.push( msg );
+                }
+                return acc;
+            }, { 
+                system:null,
+                res:[] }
+        );
+        const bodyRequest = { model, "max_tokens":(maxTokens||1024), messages:res, system, stream };
+        if ( !system )
+            delete bodyRequest.system;
+        return bodyRequest;
     }
 
     chatResponseNormalizer( response ) {
         return { message: {
-            content : response.content.text
+            content : response.content[0].text
         } };
     }
 
+    async *simple_iterator( reader ) {
+        const that = this;
+        all:while ( true ) {
+            const { done, value } = await reader.read();
+            if ( done ) break;
+            const textChunk = Provider.TEXT_DECODER.decode( value );     
+            const lines = textChunk.split("\n");
+            for ( const line of lines ) {
+                if ( line.startsWith( "data:" ) ) {
+                    const dataJSON = line.substring( 5 );
+                    const dataObj = JSON.parse( dataJSON );
+                    if ( dataObj.type == "content_block_delta" ) {
+                        const result = dataObj.delta.text;
+                        yield { message : { role : 'assistant', content:result } };
+                    } else 
+                    if ( dataObj.type == "content_block_stop" )
+                        break all;
+                }
+            }
+        }
+    }
 
 }
 

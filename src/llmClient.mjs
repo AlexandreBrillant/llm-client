@@ -32,13 +32,18 @@ class LLMClient extends Provider {
     #apiKey;
 
     /**
-     * @param provider LLM provider server like ollama...
+     * @param provider optional LLM provider only if your didn't call setProvider
      */
     constructor( provider ) {
+        super();
+        if ( provider ) 
+            this.setProvider( provider );
+    }
+
+    setProvider( provider ) {
         if ( !provider instanceof Provider ) {
             throw "Invalid provider, must be a Provider object";
         }
-        super();
         this.#provider = provider;
     }
 
