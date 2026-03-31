@@ -32,19 +32,19 @@ export class Provider {
     }
 
     defaultHost() {
-        throw "not implemented";
+        throw "defaultHost not implemented";
     }
 
     endPoints() {
-        throw "not implemented";
+        throw "endPoints not implemented";
     }
 
     modelsResponseNormalizer( response ) {
-        throw "not implemented";
+        throw "modelsResponseNormalizer not implemented";
     }
 
     chatResponseNormalizer( response ) {
-        throw "not implemented";
+        throw "chatResponseNormalizer not implemented";
     }
 
     chatBodyRequest( { model, maxTokens, messages, stream } ) {
@@ -55,11 +55,13 @@ export class Provider {
         stream = stream ?? false;
         host = host ?? this.defaultHost();
 
-        const rep = await fetch( host + this.endPoints().chat, {
+        let body = JSON.stringify( this.chatBodyRequest( { model, maxTokens, messages, stream } ) );
+
+        const rep = await fetch( host + this.endPoints( model, stream ).chat, {
             method: "POST",
             format:"json",
             headers: this.defaultHeaders( {host,apiKey,maxTokens} ),
-            body: JSON.stringify( this.chatBodyRequest( { model, maxTokens, messages, stream } ) )
+            body
         } );
 
         if ( !rep.ok ) {
@@ -71,7 +73,7 @@ export class Provider {
             return this.chatResponseNormalizer( await rep.json() );
         } else {       
             const reader = await rep.body.getReader();
-            return this.simple_iterator( reader );
+            return this.simple_iterator( reader, maxTokens );
         }
     }
 
@@ -97,15 +99,18 @@ export class Provider {
         return result;
     }
 
-    async *simple_iterator( reader ) {
+    async *simple_iterator( reader, maxTokens ) {
         const that = this;
         while ( true ) {
             const { done, value } = await reader.read();
             if ( done ) break;
-            const textChunk = Provider.TEXT_DECODER.decode( value );     
+            const textChunk = Provider.TEXT_DECODER.decode( value );  
+            console.log( textChunk );
             const tab = textChunk.split( "\n" ).filter( line => line.trim() != "" );
             for ( let chunk of tab ) {
                 if ( chunk ) {
+                    // console.log( "CHUNK !!" );
+                    // console.log( "((" + chunk + "))" );
                     try {
                         const parsedChunk = that.parse( chunk );
                         if ( typeof parsedChunk == "boolean" )

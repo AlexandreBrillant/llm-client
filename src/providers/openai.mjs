@@ -87,35 +87,5 @@ export class OpenAIProvider extends Provider {
         return response.choices[0];
     }
 
-/*
-{
-  id: 'gpt-4-0613',
-  object: 'model',
-  created: 1686588896,
-  owned_by: 'openai'
-}
-*/
-
-/*
-{
-  id: 'chatcmpl-DNhl6TMV4dhSDiuTMv5EeadoSAJ97',
-  object: 'chat.completion.chunk',
-  created: 1774542124,
-  model: 'gpt-5-nano-2025-08-07',
-  service_tier: 'default',
-  system_fingerprint: null,
-  choices: [ { index: 0, delta: [Object], finish_reason: null } ],
-  obfuscation: 'xHo'
-}
-
-{
-  model: 'ministral-3:3b',
-  created_at: '2026-03-26T16:20:13.923200205Z',
-  message: { role: 'assistant', content: ' How' },
-  done: false
-}
-
-*/
-
 }
 

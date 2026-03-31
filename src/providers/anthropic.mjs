@@ -86,19 +86,16 @@ export class AnthropicProvider extends Provider {
     chatBodyRequest( { model, maxTokens, messages, stream } ) {
         const { system, res } = messages.reduce(
             (acc, msg) => {
-                if (msg.role === "system") {
+                if (msg.role == "system") {
                     acc.system = msg.content;
                 } else {
                     acc.res.push( msg );
                 }
                 return acc;
             }, { 
-                system:null,
                 res:[] }
         );
         const bodyRequest = { model, "max_tokens":(maxTokens||1024), messages:res, system, stream };
-        if ( !system )
-            delete bodyRequest.system;
         return bodyRequest;
     }
 

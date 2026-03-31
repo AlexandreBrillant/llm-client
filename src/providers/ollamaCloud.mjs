@@ -48,23 +48,5 @@ export class OllamaCloudProvider extends OllamaProvider {
         return "ollama-cloud";
     }
 
-/* 
-    {
-        "name":"ministral-3:14b",
-        "model":"ministral-3:14b",
-        "modified_at":"2026-03-20T16:36:25.485217708+01:00",
-        "size":9082537546,
-        "digest":"4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
-        "details":
-            {
-                "parent_model":"",
-                "format":"gguf",
-                "family":"mistral3",
-                "families":["mistral3"],
-                "parameter_size":"13.9B",
-                "quantization_level":"Q4_K_M"}
-    }
-*/
-
 }
 

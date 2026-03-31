@@ -40,6 +40,10 @@ class LLMClient extends Provider {
             this.setProvider( provider );
     }
 
+    /**
+     * Use this LLM provider (ollama,mistral,openai...)
+     * @param provider LLMProvider
+     */
     setProvider( provider ) {
         if ( !provider instanceof Provider ) {
             throw "Invalid provider, must be a Provider object";
@@ -48,7 +52,7 @@ class LLMClient extends Provider {
     }
 
     /**
-     * Set host URL. Else it will use the default URL
+     * Update the default URL host
      * @param host host URL
      */
     setHost( host ) {
@@ -62,12 +66,21 @@ class LLMClient extends Provider {
         this.#apiKey = apiKey;
     }
 
+    #maxTokens;
+
+    /**
+     * @param maxTokens for the response
+     */
+    setMaxTokens( maxTokens ) {
+        this.#maxTokens = maxTokens;
+    }
+
     /**
      * @param host Optional service Location (using the default one else)
      * @param model Required : LLM Model name 
      * @param messages Required : An array of { role : "", content : "" }
      * @param stream By default to true
-     * @returns A complete response or an iterable response
+     * @returns A complete response or an iterable response with the following format { message: { role:"", content:"" } }
      */
     async chat( { model, messages, stream } ) {       
         if ( !model )
@@ -78,12 +91,12 @@ class LLMClient extends Provider {
             throw "messages must be an array of { role, content }";
         if ( !this.#provider )
             throw "No provider ?";
-        return this.#provider.chat( { host:this.#host, apiKey:this.#apiKey, model, messages, stream } );
+        return this.#provider.chat( { host:this.#host, apiKey:this.#apiKey, maxTokens:this.#maxTokens, model, messages, stream } );
     }
 
     /**
      * @param host Optional Service location
-     * @return an array with a list of available models
+     * @return an array with a list of available models with the following format { name:..., ... }
      */
     async models() {
         if ( !this.#provider )

@@ -33,6 +33,7 @@
     "test:openai" : "node test/test-openai.mjs",
     "test:mistralai" : "node test/test-mistralai.mjs",
     "test:anthropic" : "node test/test-anthropic.mjs",
+    "test:google" : "node test/test-google.mjs",
     "test" : "npm run test:ollama && npm run test:ollama-cloud && npm run test:chatgpt"
   }
 }
