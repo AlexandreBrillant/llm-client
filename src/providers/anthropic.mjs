@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { text } from "node:stream/consumers";
 import { Provider } from "./provider.mjs ";
 
 const DEFAULT_HOST = "https://api.anthropic.com/v1";
@@ -93,9 +92,10 @@ export class AnthropicProvider extends Provider {
                 }
                 return acc;
             }, { 
+                system:undefined,
                 res:[] }
         );
-        const bodyRequest = { model, "max_tokens":(maxTokens||1024), messages:res, system, stream };
+        const bodyRequest = { model, "max_tokens":(maxTokens||1024), messages:res, ...( system ? { system } : {} ), stream };
         return bodyRequest;
     }
 

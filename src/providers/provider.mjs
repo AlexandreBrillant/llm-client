@@ -3,6 +3,8 @@
  * (c) 2026 Alexandre Brillant
  */
 
+import { text } from "node:stream/consumers";
+
 /* 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the &quot;Software&quot;), to deal
@@ -51,11 +53,21 @@ export class Provider {
         return { model, messages, stream };
     }
 
+    #traceMode;
+
+    trace(traceMode) {
+        this.#traceMode = traceMode;
+    }
+
     async chat( { host, apiKey, maxTokens, model, messages, stream } ) {    
         stream = stream ?? false;
         host = host ?? this.defaultHost();
 
-        let body = JSON.stringify( this.chatBodyRequest( { model, maxTokens, messages, stream } ) );
+        const bodyRequest = this.chatBodyRequest( { model, maxTokens, messages, stream } );
+
+        this.#traceMode && ( console.log( bodyRequest ) );
+
+        let body = JSON.stringify( bodyRequest );
 
         const rep = await fetch( host + this.endPoints( model, stream ).chat, {
             method: "POST",
@@ -99,28 +111,37 @@ export class Provider {
         return result;
     }
 
+    splitChunk( textChunk ) {
+        return textChunk.split( "\n" ).filter( line => line.trim() != "" );
+    }
+
     async *simple_iterator( reader, maxTokens ) {
         const that = this;
+        let index = 1;
+        let chunkAccumulator = "";
+
         while ( true ) {
             const { done, value } = await reader.read();
             if ( done ) break;
-            const textChunk = Provider.TEXT_DECODER.decode( value );  
-            console.log( textChunk );
-            const tab = textChunk.split( "\n" ).filter( line => line.trim() != "" );
-            for ( let chunk of tab ) {
-                if ( chunk ) {
-                    // console.log( "CHUNK !!" );
-                    // console.log( "((" + chunk + "))" );
-                    try {
-                        const parsedChunk = that.parse( chunk );
-                        if ( typeof parsedChunk == "boolean" )
+            const textChunk = Provider.TEXT_DECODER.decode( value );
+            const tab = that.splitChunk( chunkAccumulator + textChunk );
+            if ( tab == null ) {
+                chunkAccumulator += textChunk;
+            } else {        
+                chunkAccumulator = "";
+                for ( let chunk of tab ) {
+                    if ( chunk ) {
+                        try {
+                            const parsedChunk = that.parse( chunk );
+                            if ( typeof parsedChunk == "boolean" )
+                                break;
+                            const result = this.normalizeIt( parsedChunk );
+                            if ( !result )
+                                break;
+                            yield result;
+                        } catch( error ) {
                             break;
-                        const result = this.normalizeIt( parsedChunk );
-                        if ( !result )
-                            break;
-                        yield result;
-                    } catch( error ) {
-                        break;
+                        }
                     }
                 }
             }

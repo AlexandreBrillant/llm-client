@@ -52,7 +52,11 @@ models.forEach( model => {
 
 const model = "gpt-5-nano";
 
-const messages = [ { role : "user", content : "hello" }];
+const messages = [ 
+    { role : "user", content : "hello" },
+    { role : "assistant", content : "hello !" },
+    { role : "user", content : "hello ?" }
+];
 
 // No streaming
 let stream = false;

@@ -23,9 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { measureMemory } from "node:vm";
 import { Provider} from "./provider.mjs";
 
 const DEFAULT_HOST = "https://generativelanguage.googleapis.com/v1beta";
+const chunkScannerRe = new RegExp( `"text":\\s+"(.*)"`, "g" );
 
 export class GoogleProvider extends Provider {
 
@@ -102,10 +104,33 @@ export class GoogleProvider extends Provider {
 
     normalizeIt( chunk ) {
         if ( chunk.candidates )  {
-            return { 
-                role:"assistant",
-                content:chunk.candidates[0]?.content?.parts[0]?.text
+            return {
+                message:{ 
+                    role:"assistant",
+                    content:chunk.candidates[0]?.content?.parts[0]?.text
+                }
             }
+        } else {
+            if ( typeof chunk == "string" ) 
+                return {
+                    message:{
+                        role:"assistant",
+                        content:chunk
+                    }
+                };
+            return null;
+        }
+    }
+
+    parse( chunk ) {
+        return chunk;
+    }
+
+    splitChunk( textChunk ) {
+        const res = chunkScannerRe.exec( textChunk );
+        if ( res ) {
+            const jsonReparsing = JSON.parse( `{ \"text\": \"${res[1]}\" }` );
+            return [jsonReparsing.text];
         } else
             return null;
     }

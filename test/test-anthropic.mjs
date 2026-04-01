@@ -37,6 +37,7 @@ import { LLMClient } from "../src/llmClient.mjs";
 import { AnthropicProvider as MyProvider } from "../src/providers/anthropic.mjs";
 
 const provider = new MyProvider();
+provider.trace(true);
 const client = new LLMClient( provider );
 
 client.setAPIKey( YOUR_API_KEY );
@@ -52,8 +53,11 @@ models.forEach( model => {
 
 const model = "claude-haiku-4-5-20251001";
 const messages = [ 
-    { role : "user", content : "hello" }
+    { role : "user", content : "hello" },
+    { role : "assistant", content : "hello !" },
+    { role : "user", content : "hello ?" }
 ];
+
 
 // No streaming
 let stream = false;

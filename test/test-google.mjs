@@ -24,13 +24,14 @@ SOFTWARE.
 */
 
 // Test for Chatgpt
-// It requires an API KEY, stored inside the JSON file apikeys.json
+// It requires an API KEY, stored inside the JSON file apikeys.json with { google:"YOUR_API_KEY" }
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const keys = JSON.parse( readFileSync( join( __dirname, "apikeys.json" ) ) );
+
 const YOUR_API_KEY = keys.google;
 
 import { LLMClient } from "../src/llmClient.mjs";
@@ -52,28 +53,35 @@ models.forEach( model => {
 
 const model = "gemini-2.5-flash";
 
-const messages = [ { role : "user", content : "hello" }];
+const messages = [ 
+    { role : "user", content : "hello" },
+    { role : "assistant", content : "hello !" },
+    { role : "user", content : "hello ?" }
+];
 
 // No streaming
 let stream = false;
 console.log( `\n\nStream : ${stream}` );
 console.log( messages );
 
-// let response = await client.chat( { model, messages, stream } );
-// console.log( response.message.content );
+let response = await client.chat( { model, messages, stream } );
+console.log( response.message.content );
 
 
 // With streaming
 stream = true;
-messages.push( { role : "system", content : "be very funny" } );
+messages.push( { role : "system", content : "be very funny in 3 lines" } );
 
 console.log( `\n\nStream : ${stream}` );
 console.log( messages );
 
 const response2 = await client.chat( { model, messages, stream } );
 
-for await ( response of response2 ) {
-    process.stdout.write( response.message.content );
+let totalRep = "";
+
+for await ( const response of response2 ) {
+    totalRep += ( response.message.content );
 }
 
+console.log( totalRep );
 console.log( "\n" );

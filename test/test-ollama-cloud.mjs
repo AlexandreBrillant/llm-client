@@ -53,7 +53,11 @@ models.forEach( model => {
 
 // Very big model for our test
 const model = "mistral-large-3:675b";
-const messages = [ { role : "user", content : "hello" }];
+const messages = [ 
+    { role : "user", content : "hello" },
+    { role : "assistant", content : "hello !" },
+    { role : "user", content : "hello ?" }
+];
 
 // No streaming
 let stream = false;
