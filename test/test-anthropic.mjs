@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Test for Chatgpt
 // It requires an API KEY, stored inside the JSON file apikeys.json { "anthropic" : "YOUR_KEY" }
+// Use node test/test-anthropic.mjs for running
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';

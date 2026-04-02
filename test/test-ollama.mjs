@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 // Test for OLLAMA
+// Use node test/test-ollama.mjs for running
 
 import { LLMClient } from "../src/llmClient.mjs";
 import { OllamaProvider as MyProvider } from "../src/providers/ollama.mjs";

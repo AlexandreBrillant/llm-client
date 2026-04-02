@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Test for Chatgpt
 // It requires an API KEY, stored inside the JSON file apikeys.json { "openai" : "YOUR_KEY" }
+// Use node test/test-openai.mjs for running
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';

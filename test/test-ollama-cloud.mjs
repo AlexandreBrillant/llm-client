@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Test for OLLAMA Cloud
 // It requires an API KEY, stored inside the JSON file apikeys.json { "ollamacloud" : "YOUR_KEY" }
+// Use node test/test-ollama-cloud.mjs for running
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';

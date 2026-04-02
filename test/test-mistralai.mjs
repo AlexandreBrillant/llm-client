@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Test for Chatgpt
 // It requires an API KEY, stored inside the JSON file apikeys.json { "mistralai" : "YOUR_KEY" }
+// Use node test/test-mistralai.mjs for running
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';

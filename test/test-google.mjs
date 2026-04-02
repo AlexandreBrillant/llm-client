@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Test for Chatgpt
 // It requires an API KEY, stored inside the JSON file apikeys.json with { "google" : "YOUR_API_KEY" }
+// Use node test/test-google.mjs for running
 
 import { dirname, join } from 'path';
 import { readFileSync } from 'node:fs';
