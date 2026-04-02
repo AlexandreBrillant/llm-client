@@ -27,8 +27,6 @@ Environment Support
 
 LLM-Client is designed to run in both browser (web) and Node.js environments. It uses standard ESM (ECMAScript Modules) for compatibility across platforms.
 
-- Usu
-
 # Architecture
 
 LLM-Client uses access providers. Each provider is specific to a cloud client (OpenAI, etc.).
