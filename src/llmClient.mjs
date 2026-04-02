@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Provider } from "./providers/provider.mjs";
+import { Provider } from "./provider.mjs";
 
 class LLMClient extends Provider {
 

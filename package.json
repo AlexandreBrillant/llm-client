@@ -26,8 +26,8 @@
   "type": "module",
   "main": "llmClient.mjs",
   "scripts": {
-    "prebuild" : "node --check src/llmClient.mjs",
-    "build" : "cp src/llmClient.mjs dist",
+    "prebuild" : "node --check src/*.mjs && node --check src/providers/*.mjs",
+    "build" : "cp src/*.mjs dist && cp -r src/providers dist",
     "test:ollama" : "node test/test-ollama.mjs",
     "test:ollamaCloud" : "node test/test-ollama-cloud.mjs",
     "test:openai" : "node test/test-openai.mjs",

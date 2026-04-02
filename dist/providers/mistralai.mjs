@@ -1,5 +1,5 @@
 /**
- * openai.mjs
+ * mistralai.mjs
  * (c) 2026 Alexandre Brillant
  */
 
@@ -23,11 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Provider } from "../provider.mjs ";
+import { OpenAIProvider } from "./openai.mjs ";
 
-const DEFAULT_HOST = "https://api.openai.com/v1";
+const DEFAULT_HOST = "https://api.mistral.ai/v1";
 
-export class OpenAIProvider extends Provider {
+export class MistralAIProvider extends OpenAIProvider {
 
     defaultHeaders( {host,apiKey}) {
         if ( !apiKey )
@@ -43,19 +43,8 @@ export class OpenAIProvider extends Provider {
         return DEFAULT_HOST;
     }
 
-    endPoints() {
-        return { 
-            models : "/models",
-            chat : "/chat/completions"
-        };
-    }    
-
-    modelsResponseNormalizer( response ) {
-        return ( response.data || [] ).map( model => ( { name:model.id, ...model } ) );        
-    }
-
     toString() {
-        return "openai";
+        return "mistralai";
     }
 
     parse( chunk ) {
@@ -63,28 +52,6 @@ export class OpenAIProvider extends Provider {
         if ( message == "[DONE]" )
             return false;
         return JSON.parse( message );
-    }
-
-
-    normalizeIt( result ) {
-        if ( !result.choices )
-            return null;
-        if ( !result.choices.length )
-            return null;
-        if ( !result.choices[0].delta )
-            return null;
-        if ( !result.choices[0].delta.content )
-            return null;
-        return { 
-            model: result.model,
-            created_at: result.created,
-            message: { role: 'assistant', content: result.choices[0].delta.content },
-            done:false
-        }
-    }
-
-    chatResponseNormalizer( response ) {
-        return response.choices[0];
     }
 
 }
