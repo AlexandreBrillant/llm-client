@@ -83,7 +83,7 @@ The response is always in the following format:
 ## Without Streaming
 
 ```javascript
-{ role:'assistant', content:'I m very happy to meet you' }
+{ message: { role:'assistant', content:'I m very happy to meet you' } }
 ```
 
 ## With Streaming
@@ -91,10 +91,10 @@ The response is always in the following format:
 The response is split into multiple parts and sent incrementally:
 
 ```javascript
-{ role:'assistant', content:'I m very' }
-{ role:'assistant', content:'happ' }
-{ role:'assistant', content:'y to meet' }
-{ role:'assistant', content:'you' }
+{ message: { role:'assistant', content:'I m very' } }
+{ message: { role:'assistant', content:'happ' } }
+{ message: { role:'assistant', content:'y to meet' } }
+{ message: { role:'assistant', content:'you' } }
 ```
 
 # Usage
