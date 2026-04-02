@@ -1,6 +1,7 @@
 /**
  * ollamaCloud.mjs
  * (c) 2026 Alexandre Brillant
+ * https://github.com/AlexandreBrillant/llm-client
  */
 
 /* 
