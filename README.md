@@ -23,6 +23,12 @@ LLM-Client supports :
 - Google
 - MistralAI
 
+Environment Support
+
+LLM-Client is designed to run in both browser (web) and Node.js environments. It uses standard ESM (ECMAScript Modules) for compatibility across platforms.
+
+- Usu
+
 # Architecture
 
 LLM-Client uses access providers. Each provider is specific to a cloud client (OpenAI, etc.).
@@ -66,7 +72,11 @@ A request is an array of objects in the format { role:"", content:"" }. The role
 The response is always in the following format:
 
 ```javascript
-{ role:'assistant', content:'my llm response' }
+{ message: {
+    role:'assistant', 
+    content:'my llm response'
+  }
+}
 ```
 
 - Without streaming : The response is complete
