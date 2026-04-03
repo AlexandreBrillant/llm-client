@@ -1,6 +1,7 @@
 /**
  * test-openai.mjs
  * (c) 2026 Alexandre Brillant
+ * https://www.alexandrebrillant.com
  */
 
 /* 

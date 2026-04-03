@@ -1,5 +1,5 @@
 {
-  "name": "llm-client",
+  "name": "@alexandrebrillant/llm-client",
   "version": "1.0.0",
   "description": "LM-client is a lightweight library that provides a unified REST API interface for interacting with various language models (Ollama, ChatGPT, Mistral, etc.). It abstracts provider-specific details into modular plugins, offering a simple and consistent way to integrate multiple LLM services into your applications.",
   "keywords": [
@@ -11,9 +11,18 @@
     "client LLM",
     "service llm",
     "llm", 
-    "ollama"
+    "ollama",
+    "ollama cloud",
+    "mistralai",
+    "openai",
+    "anthropic",
+    "google",
+    "gemini",
+    "lechat",
+    "chatgpt",
+    "claude"
   ],
-  "homepage": "https://github.com/AlexandreBrillant/llm-client#readme",
+  "homepage": "https://github.com/AlexandreBrillant/llm-client",
   "bugs": {
     "url": "https://github.com/AlexandreBrillant/llm-client/issues"
   },

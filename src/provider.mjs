@@ -2,6 +2,7 @@
  * provider.mjs
  * (c) 2026 Alexandre Brillant
  * https://github.com/AlexandreBrillant/llm-client
+ * https://www.alexandrebrillant.com
  */
 
 /* 
@@ -66,18 +67,19 @@ export class Provider {
 
         this.#traceMode && ( console.log( bodyRequest ) );
 
+        const headers = this.defaultHeaders( {host,apiKey,maxTokens} );
         let body = JSON.stringify( bodyRequest );
 
         const rep = await fetch( host + this.endPoints( model, stream ).chat, {
             method: "POST",
             format:"json",
-            headers: this.defaultHeaders( {host,apiKey,maxTokens} ),
+            headers,
             body
         } );
 
         if ( !rep.ok ) {
             const errorData = await rep.json();
-            throw "Invalid request : " + rep.status + " : " + errorData.error?.message;
+            throw "Invalid request : code " + rep.status + " : " + ( errorData.error?.message || " no message " );
         }
 
         if ( !stream ) {
