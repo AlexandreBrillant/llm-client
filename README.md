@@ -4,10 +4,9 @@ LLM-client is a lightweight JavaScript library that provides a unified REST API 
 
 (c) 2026 [Alexandre Brillant](https://www.alexandrebrillant.com)
 
-
 https://github.com/AlexandreBrillant/llm-client
 
-Features
+Features for the Free version
 
 - No external dependencies
 - Easy to use
@@ -23,6 +22,14 @@ LLM-Client supports :
 - Anthropic
 - Google
 - MistralAI
+
+Professional version ([contact me here](https://www.alexandrebrillant.com/llmclient.html)) :
+
+- Load balancing support
+- Error rescue
+- Cache mode
+- Monitoring
+- Context management
 
 Environment Support
 
