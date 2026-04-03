@@ -2,7 +2,8 @@
 
 LLM-client is a lightweight JavaScript library that provides a unified REST API interface for interacting with various language models (Ollama, ChatGPT, Mistral, etc.). It abstracts provider-specific details into modular plugins, offering a simple and consistent way to integrate multiple LLM services into your applications.
 
-(c) 2026 Alexandre Brillant
+(c) 2026 [Alexandre Brillant](https://www.alexandrebrillant.com)
+
 
 https://github.com/AlexandreBrillant/llm-client
 
@@ -234,4 +235,4 @@ const client = new LLMClient( provider );
 client.setAPIKey( YOUR_API_KEY );
 ```
 
-(c) 2026 Alexandre Brillant
+(c) 2026 [Alexandre Brillant](https://www.alexandrebrillant.com)
