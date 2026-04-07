@@ -1,6 +1,6 @@
 {
   "name": "@alexandrebrillant2/llm-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publishConfig": {
     "access": "public"
   },  
@@ -46,6 +46,7 @@
     "test:mistralai" : "node test/test-mistralai.mjs",
     "test:anthropic" : "node test/test-anthropic.mjs",
     "test:google" : "node test/test-google.mjs",
+    "test:cancel" : "node test/test-cancel.mjs",
     "test" : "npm run test:ollama && npm run test:ollama-cloud && npm run test:chatgpt"
   }
 }

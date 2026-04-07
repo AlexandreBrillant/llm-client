@@ -13,7 +13,6 @@ Features for the Free version
 - Supports both streaming and non-streaming requests
 - Simplified context management
 
-
 LLM-Client supports :
 
 - OLLAMA
@@ -176,6 +175,12 @@ const response2 = await client.chat( { model, messages, stream } );
 for await ( response of response2 ) {
     process.stdout.write( response.message.content );
 }
+```
+
+You can cancel the response calling at any time :
+
+```javascript
+    client.cancel();
 ```
 
 # Cloud Providers

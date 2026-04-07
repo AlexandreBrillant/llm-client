@@ -59,6 +59,8 @@ export class Provider {
         this.#traceMode = traceMode;
     }
 
+    #reader;
+
     async chat( { host, apiKey, maxTokens, model, messages, stream } ) {    
         stream = stream ?? false;
         host = host ?? this.defaultHost();
@@ -79,14 +81,17 @@ export class Provider {
 
         if ( !rep.ok ) {
             const errorData = await rep.json();
-            throw "Invalid request : code " + rep.status + " : " + ( errorData.error?.message || " no message " );
+            throw { 
+                code : rep.status,
+                message : ( errorData.error?.message ) || " no message " 
+            };
         }
 
         if ( !stream ) {
             return this.chatResponseNormalizer( await rep.json() );
         } else {       
-            const reader = await rep.body.getReader();
-            return this.simple_iterator( reader, maxTokens );
+            this.#reader = await rep.body.getReader();
+            return this.simple_iterator( maxTokens );
         }
     }
 
@@ -116,10 +121,19 @@ export class Provider {
         return textChunk.split( "\n" ).filter( line => line.trim() != "" );
     }
 
-    async *simple_iterator( reader, maxTokens ) {
+    isReading() {
+        return this.#reader != null;
+    }
+
+    cancel() {
+       this.#reader && this.#reader.cancel(); 
+    }
+
+    async *simple_iterator( maxTokens ) {
         const that = this;
         let index = 1;
         let chunkAccumulator = "";
+        const reader = that.#reader;
 
         while ( true ) {
             const { done, value } = await reader.read();
@@ -147,6 +161,8 @@ export class Provider {
                 }
             }
         }
+
+        that.#reader = null;
     }
 
 }
