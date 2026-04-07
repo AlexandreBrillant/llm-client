@@ -106,6 +106,15 @@ class LLMClient extends Provider {
         return this.#provider.models( { host:this.#host, apiKey:this.#apiKey } );
     }
 
+    /**
+     * Cancel the current streaming
+     */
+    cancel() {
+        if ( !this.#provider )
+            throw "No provider ?";        
+        this.#provider.cancel();
+    }
+
 }
 
 export { LLMClient };
