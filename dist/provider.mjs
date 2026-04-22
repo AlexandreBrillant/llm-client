@@ -81,10 +81,13 @@ export class Provider {
 
         if ( !rep.ok ) {
             const errorData = await rep.json();
+            const message = errorData.error?.message || errorData.error;
+
             throw { 
                 code : rep.status,
-                message : ( errorData.error?.message ) || " no message " 
+                message : message || " no message " 
             };
+
         }
 
         if ( !stream ) {

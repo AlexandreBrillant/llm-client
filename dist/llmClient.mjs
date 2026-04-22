@@ -78,7 +78,7 @@ class LLMClient extends Provider {
     }
 
     /**
-     * @param host Optional service Location (using the default one else)
+     * You may update the default host using setHost before
      * @param model Required : LLM Model name 
      * @param messages Required : An array of { role : "", content : "" }
      * @param stream By default to true
@@ -97,7 +97,7 @@ class LLMClient extends Provider {
     }
 
     /**
-     * @param host Optional Service location
+     * You may update the default host using setHost before
      * @return an array with a list of available models with the following format { name:..., ... }
      */
     async models() {
