@@ -183,6 +183,12 @@ You can cancel the response calling at any time :
     client.cancel();
 ```
 
+you may also limit the size of the response calling :
+
+```javascript
+client.setMaxTokens( 100 )
+```
+
 # Cloud Providers
 
 You need an API key from each cloud provider. Pass the key using the **setAPIKey** method.
