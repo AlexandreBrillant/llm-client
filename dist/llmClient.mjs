@@ -71,6 +71,7 @@ class LLMClient extends Provider {
     #maxTokens;
 
     /**
+     * Option for limiting the size of the response
      * @param maxTokens for the response
      */
     setMaxTokens( maxTokens ) {

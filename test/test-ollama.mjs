@@ -47,7 +47,7 @@ const model = "ministral-3:3b";
 const messages = [ 
     { role : "user", content : "hello" },
     { role : "assistant", content : "hello !" },
-    { role : "user", content : "hello ?" }
+    { role : "user", content : "Ecris 10 lignes" }
 ];
 
 // No streaming

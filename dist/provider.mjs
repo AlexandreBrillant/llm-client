@@ -156,6 +156,12 @@ export class Provider {
                             const result = this.normalizeIt( parsedChunk );
                             if ( !result )
                                 break;
+
+                            index++;
+                            if ( maxTokens && index > maxTokens ) {
+                                that.cancel();
+                            }
+
                             yield result;
                         } catch( error ) {
                             break;
